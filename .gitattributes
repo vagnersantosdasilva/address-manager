@@ -1,0 +1,30 @@
+# 1. Normalização de quebras de linha (Crucial para Java e React)
+# Garante que arquivos de texto usem LF (padrão Unix) no repositório
+* text=auto
+
+# Arquivos específicos que DEVEM ter quebra de linha LF (Linux/macOS)
+*.sh text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.java text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+
+# 2. Identificação de arquivos binários (Não devem ser "mergeados" como texto)
+*.jpg binary
+*.png binary
+*.gif binary
+*.ico binary
+*.jar binary
+*.pdf binary
+
+# 3. Organização do GitHub (Linguist)
+# Garante que o GitHub identifique corretamente as linguagens do desafio
+# e ignore pastas de dependências nas estatísticas.
+backend/** linguist-detectable=true
+frontend/** linguist-detectable=true
+**/node_modules/* linguist-vendored
+**/target/* linguist-vendored
