@@ -1,0 +1,22 @@
+CREATE TABLE user (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(150) NOT NULL,
+    cpf VARCHAR(11) UNIQUE NOT NULL,
+    date_of_birth DATE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('ADMIN', 'COMMON') DEFAULT 'COMMON' NOT NULL
+    );
+
+CREATE TABLE address (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cep VARCHAR(10) NOT NULL,
+    street VARCHAR(150) NOT NULL,
+    number INT NOT NULL,
+    supplement VARCHAR(100),
+    neighborhood VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(2) NOT NULL,
+    is_main BOOLEAN DEFAULT FALSE,
+    id_user INT NOT NULL,
+    FOREIGN KEY (id_user) REFERENCES user(id) ON DELETE CASCADE
+);
