@@ -23,14 +23,14 @@ public class User {
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "date_of_birth", nullable = false)
     private LocalDate birthDate;
 
     @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_type", nullable = false)
+    @Column(name = "role", nullable = false)
     private UserType userType;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

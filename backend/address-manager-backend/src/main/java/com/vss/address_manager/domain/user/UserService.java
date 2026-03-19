@@ -33,6 +33,7 @@ public class UserService {
         throw new BusinessException("CPF já cadastrado!");
     }
 
+    //TODO: Verificar se id de url é igual ao do corpo
     @Transactional
     public UserResponseDto updateUser(UserUpdateDto userDto, Long idUser){
         Optional<User> userOptional = this.userRepository.findById(idUser);
@@ -72,7 +73,7 @@ public class UserService {
         throw new ResourceNotFoundException("Usuário não encontrado pelo cpf");
     }
 
-    public UserResponseDto getUserByCPF(Long id){
+    public UserResponseDto getUserById(Long id){
         Optional userOptional = this.userRepository.findById(id);
         if (userOptional.isPresent()){
             return new UserResponseDto((User)userOptional.get());
