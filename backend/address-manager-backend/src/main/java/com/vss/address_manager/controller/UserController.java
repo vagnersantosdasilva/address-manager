@@ -3,10 +3,12 @@ package com.vss.address_manager.controller;
 import com.vss.address_manager.domain.user.UserService;
 import com.vss.address_manager.domain.user.dto.UserCreateDto;
 import com.vss.address_manager.domain.user.dto.UserResponseDto;
+import com.vss.address_manager.domain.user.dto.UserSelfUpdateDto;
 import com.vss.address_manager.domain.user.dto.UserUpdateDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -23,6 +25,7 @@ public class UserController {
     }
 
     @PostMapping("user")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserCreateDto userCreateDto, UriComponentsBuilder uriBuilder) throws InterruptedException {
         UserResponseDto dataResponse = userService.createUser(userCreateDto);
         var uri = uriBuilder.path("/user/{id}").buildAndExpand(dataResponse.id()).toUri();
@@ -30,30 +33,43 @@ public class UserController {
     }
 
     @PutMapping("user/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserResponseDto> updateUser(@RequestBody @Valid UserUpdateDto userUpdateDto, @PathVariable Long id){
         UserResponseDto dataResponse = userService.updateUser(userUpdateDto, id);
         return ResponseEntity.ok().body(dataResponse);
     }
 
     @DeleteMapping("user/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity deteUser(@PathVariable Long id){
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("user")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<UserResponseDto>> getAllUser(){
         return ResponseEntity.ok().body(userService.getAllUser());
     }
 
     @GetMapping("user/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #id.equals(principal.id)")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok().body(userService.getUserById(id));
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserResponseDto> getUserByCpf(@RequestParam String cpf) {
         return ResponseEntity.ok().body(userService.getUserByCPF(cpf));
     }
 
+    @PatchMapping("user/{id}")
+    @PreAuthorize("#id.equals(principal.id)")
+    public ResponseEntity<UserResponseDto> selfUpdate(
+            @PathVariable Long id,
+            @RequestBody @Valid UserSelfUpdateDto dto) {
+        UserResponseDto dataResponse = userService.selfUpdate(id, dto);
+        return ResponseEntity.ok().body(dataResponse);
+    }
 }

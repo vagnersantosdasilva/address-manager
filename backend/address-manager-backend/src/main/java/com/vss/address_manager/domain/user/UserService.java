@@ -2,10 +2,12 @@ package com.vss.address_manager.domain.user;
 
 import com.vss.address_manager.domain.user.dto.UserCreateDto;
 import com.vss.address_manager.domain.user.dto.UserResponseDto;
+import com.vss.address_manager.domain.user.dto.UserSelfUpdateDto;
 import com.vss.address_manager.domain.user.dto.UserUpdateDto;
 import com.vss.address_manager.infra.exceptions.BusinessException;
 import com.vss.address_manager.infra.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +19,20 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private UserRepository userRepository;
-
+    private PasswordEncoder passwordEncoder;
     @Autowired
-    UserService(UserRepository userRepository ){
+    UserService(UserRepository userRepository, PasswordEncoder passwordEncoder ){
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public UserResponseDto createUser(UserCreateDto userDto) {
         Optional<User> userOptional = this.userRepository.findByCpf(userDto.cpf());
         if (userOptional.isEmpty()){
-            User userSaved =  this.userRepository.save(new User(userDto));
+            User newUser = new User(userDto);
+            newUser.setPassword(passwordEncoder.encode(userDto.password()));
+            User userSaved =  this.userRepository.save(newUser);
             return new UserResponseDto(userSaved);
         }
         throw new BusinessException("CPF já cadastrado!");
@@ -79,5 +84,24 @@ public class UserService {
             return new UserResponseDto((User)userOptional.get());
         }
         throw new ResourceNotFoundException("Usuário não encontrado pelo Id");
+    }
+
+    @Transactional
+    public UserResponseDto selfUpdate(Long id, UserSelfUpdateDto dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        // Atualiza apenas o que é permitido
+        user.setName(dto.name());
+        user.setCpf(dto.cpf());
+        user.setBirthDate(dto.birthDate());
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        // O campo user.setUserType() não pode ser chamado aqui.
+        return new UserResponseDto(userRepository.save(user));
+    }
+
+    //TODO: metodo para atualizar senha
+    public void updatePassword(String cpf, String password){
+
     }
 }

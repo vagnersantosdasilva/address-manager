@@ -1,4 +1,9 @@
-
+api:
+  security:
+    admin:
+      password: ${ADM_PASSWORD_DEFAULT}
+      cpf: ${ADM_CPF_DEFAULT}
+    algorithm: ${ALG_SECRET}
 spring:
   datasource:
     url: jdbc:mysql://localhost/address_manager

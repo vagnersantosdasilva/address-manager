@@ -18,8 +18,6 @@ public record UserUpdateDto(
         String cpf,
         @NotNull(message="Campo Birth Date não pode ser vazio")
         LocalDate birthDate,
-        @NotBlank(message="Campo Password não pode ser vazio")
-        String password,
         @NotNull(message="Campo User Type não pode ser vazio")
         UserType userType // Use o Enum diretamente aqui!
 ) {
