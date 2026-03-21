@@ -1,7 +1,9 @@
 package com.vss.address_manager.controller;
 
 import com.vss.address_manager.domain.address.AddressService;
+import com.vss.address_manager.domain.address.ZipCodeService;
 import com.vss.address_manager.domain.address.dto.AddressCreateDto;
+import com.vss.address_manager.domain.address.dto.AddressPartialDto;
 import com.vss.address_manager.domain.address.dto.AddressResponseDto;
 import com.vss.address_manager.domain.address.dto.AddressUpdateDto;
 import jakarta.validation.Valid;
@@ -18,12 +20,13 @@ import java.util.List;
 public class AddressController {
 
     private AddressService addressService;
+    private ZipCodeService zipCodeService;
 
     @Autowired
-    AddressController(AddressService addressService){
+    AddressController(AddressService addressService, ZipCodeService zipCodeService){
         this.addressService = addressService;
+        this.zipCodeService = zipCodeService;
     }
-
 
     @PostMapping("user/{idUser}/address")
     @PreAuthorize("hasRole('ROLE_ADMIN') or #idUser.equals(principal.id)")
@@ -53,6 +56,13 @@ public class AddressController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or #idUser.equals(principal.id)")
     public ResponseEntity<List<AddressResponseDto>> getAllByUser(@PathVariable Long idUser){
         return ResponseEntity.ok().body(addressService.getAddressByUserId(idUser));
+    }
+
+    @GetMapping("user/{idUser}/zipcode/{zipcode}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #idUser.equals(principal.id)")
+    public ResponseEntity<AddressPartialDto> getPartialAddress(@PathVariable Long idUser, @PathVariable String zipcode){
+        AddressPartialDto address = zipCodeService.findAddressByZipCode(zipcode);
+        return ResponseEntity.ok().body(address);
     }
 
 }

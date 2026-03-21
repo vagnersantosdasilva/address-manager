@@ -1,4 +1,7 @@
 api:
+  external:
+    zipcode:
+      url: ${SERVICE_ZIPCODE_URL:https://viacep.com.br/ws/}
   security:
     admin:
       password: ${ADM_PASSWORD_DEFAULT}
