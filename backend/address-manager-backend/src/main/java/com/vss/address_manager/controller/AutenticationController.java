@@ -2,6 +2,7 @@ package com.vss.address_manager.controller;
 
 import com.vss.address_manager.domain.atutentication.TokenService;
 import com.vss.address_manager.domain.atutentication.dto.LoginDto;
+import com.vss.address_manager.domain.atutentication.dto.RefreshTokenDto;
 import com.vss.address_manager.domain.atutentication.dto.TokenDto;
 import com.vss.address_manager.domain.user.User;
 import com.vss.address_manager.domain.user.UserRepository;
@@ -25,15 +26,17 @@ public class AutenticationController {
     AutenticationController(TokenService tokenService , AuthenticationManager authenticationManager, UserRepository userRepository){
         this.tokenService = tokenService;
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
     }
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> efetuarLogin(@Valid @RequestBody LoginDto loginDto){
         var autenticationToken = new UsernamePasswordAuthenticationToken(loginDto.cpf(), loginDto.password());
         var authentication = authenticationManager.authenticate(autenticationToken);
-        String tokenAcesso = tokenService.generateToken((User) authentication.getPrincipal());
-        //String refreshToken = tokenService.gerarRefreshToken((Usuario) authentication.getPrincipal());
-        return ResponseEntity.ok(new TokenDto(tokenAcesso, null));
+        return ResponseEntity.ok(tokenService.createTokens((User) authentication.getPrincipal()));
+    }
+
+    @PostMapping("/update-token")
+    public ResponseEntity<TokenDto> updateToken(@Valid @RequestBody RefreshTokenDto token){
+        return ResponseEntity.ok().body(tokenService.updateTokens(token.refreshToken()));
     }
 }
