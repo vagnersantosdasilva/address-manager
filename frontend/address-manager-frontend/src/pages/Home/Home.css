@@ -1,0 +1,52 @@
+/* Home.css */
+.home-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    text-align: center;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 4rem 2rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    padding: 1.5rem;
+    transition: transform var(--transition-fast);
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.feature-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+}

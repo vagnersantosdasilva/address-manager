@@ -8,7 +8,7 @@ import { addressService } from '../../../services/address.service';
 const AddressForm: React.FC = () => {
     // userId vem da URL em rotas de admin (/admin/users/:userId/addresses/new)
     // id vem da URL em rotas de edição (/addresses/:id ou /admin/users/:userId/addresses/:id)
-    const { userId, id } = useParams<{ userId?: string, id?: string }>();
+    const { idUser, id } = useParams<{ idUser?: string, id?: string }>();
     const navigate = useNavigate();
     const isEditMode = Boolean(id);
 
@@ -28,12 +28,16 @@ const AddressForm: React.FC = () => {
         userId: 0
     });
 
+    
+
     // Lógica para determinar qual ID de usuário usar (URL ou LocalStorage)
     const getResolvedUserId = (): number => {
-        if (userId) return Number(userId);
+        if (idUser) return Number(idUser);
+        console.log('pelo idUser da url:',idUser)
         
         const stored = localStorage.getItem('@App:user');
         if (stored) {
+            console.log('retornando do storage', JSON.parse(stored).id)
             return JSON.parse(stored).id;
         }
         return 0;
@@ -46,11 +50,12 @@ const AddressForm: React.FC = () => {
         } else {
             setFormData(prev => ({ ...prev, userId: targetUserId }));
         }
-    }, [id, userId]);
+    }, [id, idUser]);
 
     const loadAddress = async (uId: number, addrId: number) => {
         try {
             const all = await addressService.getAll(uId);
+            
             const addr = all.find(a => a.id === addrId);
             if (addr) setFormData(addr);
         } catch (err) {

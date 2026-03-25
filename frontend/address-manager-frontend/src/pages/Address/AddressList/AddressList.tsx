@@ -53,7 +53,7 @@ const AddressList: React.FC = () => {
     const handleNewAddress = () => {
         if (id) {
             // Se existe 'id' na URL, é o Admin agindo sobre um usuário específico
-            navigate(`/admin/users/${id}/addresses/new`);
+            navigate(`/users/${id}/addresses/new`);
         } else {
             // Rota protegida e sem ID exposto para o usuário comum
             navigate('/myaddresses/new');

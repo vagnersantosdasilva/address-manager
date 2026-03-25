@@ -10,6 +10,7 @@ import ProtectedRoute from './routes/ProtectedRoutes';
 import UserForm from './pages/Users/UserForm/UserForm';
 import AddressList from './pages/Address/AddressList/AddressList';
 import AddressForm from './pages/Address/AddressForm/AddressForm';
+import Home from './pages/Home/Home';
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           {/* Rotas públicas / iniciais */}
 
           <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Home/> } />
 
           {/*Rotas protegidas */}
           
