@@ -28,8 +28,6 @@ const AddressForm: React.FC = () => {
         userId: 0
     });
 
-    
-
     // Lógica para determinar qual ID de usuário usar (URL ou LocalStorage)
     const getResolvedUserId = (): number => {
         if (idUser) return Number(idUser);
