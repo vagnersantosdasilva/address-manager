@@ -12,3 +12,8 @@ spring:
     url: jdbc:mysql://localhost/address_manager
     username: ${BD_USER}
     password: ${BD_SECRET}
+logging:
+  level:
+    org:
+      springframework:
+        security=DEBUG:

@@ -58,9 +58,10 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUserById(id));
     }
 
-    @GetMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<UserResponseDto> getUserByCpf(@RequestParam String cpf) {
+    @GetMapping("user/cpf/{cpf}")
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'COMMON')")
+    public ResponseEntity<UserResponseDto> getUserByCpf(@PathVariable String cpf) {
         return ResponseEntity.ok().body(userService.getUserByCPF(cpf));
     }
 
