@@ -1,0 +1,27 @@
+/* AddressList.css */
+.address-list-container {
+    padding-top: 1.5rem;
+}
+
+.address-card {
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    transition: var(--transition-fast);
+}
+
+.main-address-badge {
+    background-color: var(--success) !important;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.address-info {
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.address-label {
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-right: 5px;
+}

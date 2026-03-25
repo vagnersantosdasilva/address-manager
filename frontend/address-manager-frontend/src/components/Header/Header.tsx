@@ -30,7 +30,7 @@ const Header: React.FC = () => {
                             Usuários
                         </Nav.Link>
 
-                        <Nav.Link as={Link} to="/addresses" active={location.pathname === '/addresses'}>
+                        <Nav.Link as={Link} to="/myaddresses" active={location.pathname === '/myaddresses'}>
                             Meus endereços
                         </Nav.Link>
 

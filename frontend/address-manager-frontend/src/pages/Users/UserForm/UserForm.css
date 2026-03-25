@@ -1,0 +1,55 @@
+/* UserForm.css */
+.user-form-container {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+    /*max-width: 800px;*/
+}
+
+.user-form-card {
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    padding: 1.5rem;
+}
+
+.form-label {
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.8rem;
+    transition: var(--transition-fast);
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.btn-save {
+    background-color: var(--accent-color) !important;
+    border: none !important;
+    padding: 0.6rem 2rem;
+    font-weight: 600;
+}
+
+.btn-cancel {
+    padding: 0.6rem 1.5rem;
+}
+
+.password-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}

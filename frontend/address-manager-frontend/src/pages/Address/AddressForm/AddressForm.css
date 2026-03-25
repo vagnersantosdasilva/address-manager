@@ -1,0 +1,33 @@
+.address-form-container {
+    max-width: 900px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+.address-form-card {
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    padding: 2rem;
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.is-main-check {
+    padding: 1rem;
+    background-color: var(--background-light);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-color);
+}
+
+.btn-save-address {
+    background-color: var(--accent-color) !important;
+    border: none !important;
+    padding: 0.7rem 2.5rem;
+    font-weight: 600;
+}

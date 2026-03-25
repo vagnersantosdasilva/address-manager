@@ -3,10 +3,8 @@
 import type { User } from "../models/user.model";
 import api from "./api.services";
 
-
-
 export const userService = {
-  // O Axios permite passar o tipo esperado no Generic <T>
+ 
   getAll: async (): Promise<User[]> => {
     const response = await api.get<User[]>('api/user');
     return response.data;
@@ -29,6 +27,13 @@ export const userService = {
 
   delete: async (id: number): Promise<void> => {
     await api.delete(`/users/${id}`);
-  }
+  },
+
+  update: async(id:number, userData:User): Promise<User> => {
+    const response = await api.put<User>(`api/user/${id}`,userData)
+    return response.data;
+  },
+
+  
 
 };

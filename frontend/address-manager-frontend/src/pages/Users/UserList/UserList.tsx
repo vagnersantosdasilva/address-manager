@@ -18,7 +18,6 @@ const UserList: React.FC = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            // Chamada real ao seu backend via userService
             const data = await userService.getAll();
             setUsers(data);
             setError(null);
@@ -32,7 +31,7 @@ const UserList: React.FC = () => {
     const handleDelete = async (id: number) => {
         if (window.confirm('Deseja realmente excluir este usuário?')) {
             try {
-                await userService.delete(id); // Supondo que exista o método delete no seu service
+                await userService.delete(id); 
                 setUsers(prev => prev.filter(user => user.id !== id));
             } catch (err) {
                 setError(err instanceof Error ? err.message :'Não foi possível excluir o usuário.');
