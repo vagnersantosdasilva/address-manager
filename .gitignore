@@ -31,3 +31,39 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# ==========================================
+# FRONTEND (Caminho: frontend/address-manager-frontend)
+# ==========================================
+# Ignora node_modules em qualquer lugar (Raiz ou subpastas)
+node_modules/
+
+# Caminhos específicos do seu projeto React
+frontend/address-manager-frontend/dist/
+frontend/address-manager-frontend/dist-ssr/
+frontend/address-manager-frontend/.env
+frontend/address-manager-frontend/*.local
+
+# Logs do Frontend
+frontend/address-manager-frontend/logs/
+frontend/address-manager-frontend/*.log
+frontend/address-manager-frontend/npm-debug.log*
+frontend/address-manager-frontend/yarn-debug.log*
+frontend/address-manager-frontend/yarn-error.log*
+frontend/address-manager-frontend/pnpm-debug.log*
+
+# ==========================================
+# CONFIGURAÇÕES DE EDITOR / GLOBAIS
+# ==========================================
+.idea/
+.vscode/
+!.vscode/extensions.json
+.DS_Store
+*.iws
+*.iml
+*.ipr
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
