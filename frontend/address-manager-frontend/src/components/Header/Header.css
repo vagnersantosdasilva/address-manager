@@ -1,0 +1,31 @@
+/* src/components/Header/Header.css */
+.header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 0.5rem 0;
+}
+
+.nav-link {
+  color: var(--text-muted) !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+}
+
+.nav-link.active {
+  color: var(--accent-color) !important;
+  position: relative;
+}
+
+/* Linha embaixo do menu ativo */
+@media (min-width: 992px) {
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 1rem;
+    right: 1rem;
+    height: 3px;
+    background-color: var(--accent-color);
+    border-radius: var(--radius-sm);
+  }
+}

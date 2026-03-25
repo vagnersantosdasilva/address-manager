@@ -1,0 +1,24 @@
+/* src/styles/variables.css */
+:root {
+  /* Cores Primárias */
+  --primary-color: #2c3e50;
+  --secondary-color: #34495e;
+  --accent-color: #3498db;
+  
+  /* Estados */
+  --success: #27ae60;
+  --danger: #e74c3c;
+  --warning: #f1c40f;
+
+  /* Neutros */
+  --background-light: #f8f9fa;
+  --text-main: #2d3436;
+  --text-muted: #636e72;
+  --border-color: #dfe6e9;
+
+  /* Espaçamentos e Bordas */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --shadow-soft: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --transition-fast: 0.2s ease-in-out;
+}

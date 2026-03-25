@@ -1,0 +1,28 @@
+/* src/styles/global.css */
+@import './variables.css';
+
+body {
+  background-color: var(--background-light);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-fast);
+}
+
+/* Customizando botões do Bootstrap para seguirem o tema */
+.btn-primary {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.card {
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-soft);
+}
