@@ -1,0 +1,69 @@
+/* UserList.css */
+
+.user-list-container {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.user-list-title {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.btn-new-user {
+    background-color: var(--accent-color) !important;
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    padding: 0.6rem 1.2rem;
+    transition: var(--transition-fast);
+}
+
+.btn-new-user:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.user-card-table {
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    overflow: hidden;
+}
+
+.user-table-head {
+    background-color: var(--background-light);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.user-table-head th {
+    padding: 1rem !important;
+    color: var(--secondary-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.user-name-cell {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.action-buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Estado vazio */
+.empty-state-container {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}

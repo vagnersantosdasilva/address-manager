@@ -14,7 +14,7 @@ a {
   transition: var(--transition-fast);
 }
 
-/* Customizando botões do Bootstrap para seguirem o tema */
+/* Customizando botões do Bootstrap */
 .btn-primary {
   background-color: var(--accent-color) !important;
   border-color: var(--accent-color) !important;
