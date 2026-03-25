@@ -1,6 +1,12 @@
+import axios from "axios";
 import type { login, refreshToken, tokenResponse } from "../models/auth.model";
 import api from "./api.services";
 import { userService } from "./user.service";
+
+//Fora do intercept para evitar loops
+const authApi = axios.create({
+  baseURL: import.meta.env.VITE_API_URL
+});
 
 export const authService = {
   login: async (credentials: login): Promise<tokenResponse> => {
@@ -29,7 +35,8 @@ export const authService = {
   },
 
   refresh: async (refreshToken: refreshToken): Promise<tokenResponse> => {
-    const response = await api.post<tokenResponse>('/refresh-update', { refreshToken });
+    const response = await authApi.post<tokenResponse>('/refresh-update', { refreshToken });
     return response.data;
   }
+  
 };

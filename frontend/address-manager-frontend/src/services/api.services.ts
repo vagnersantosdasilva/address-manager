@@ -20,30 +20,33 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const status = error.response?.status;
 
-    // Se erro for 401 e ainda não tentamos o refresh para esta requisição
-    if ((error.response?.status === 401 ) && !originalRequest._retry) {
-      originalRequest._retry = true; // Marca para não entrar em loop infinito
+    // Adicionamos o 403 na verificação, pois seu backend está respondendo assim para tokens expirados
+    if ((status === 401 || status === 403) && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const refreshToken = localStorage.getItem('@App:refreshToken');
+      
+      // Se não existe nem refresh token, não adianta tentar; limpa tudo e vai para o login
+      if (!refreshToken) {
+        handleLogout();
+        return Promise.reject(error);
+      }
 
       try {
-        const refreshToken = localStorage.getItem('@App:refreshToken');
-        
-        if (refreshToken) {
-          // Tenta renovar o token
-          const { accessToken, refreshToken: newRefreshToken } = await authService.refresh({ refreshToken });
-          
-          // Salva os novos tokens
-          localStorage.setItem('@App:token', accessToken);
-          localStorage.setItem('@App:refreshToken', newRefreshToken);
+        // Tenta renovar o token
+        const response = await authService.refresh({ refreshToken });
+        const { accessToken, refreshToken: newRefreshToken } = response;
 
-          // Atualiza o header da requisição que falhou e tenta de novo
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          return api(originalRequest); 
-        }
+        localStorage.setItem('@App:token', accessToken);
+        localStorage.setItem('@App:refreshToken', newRefreshToken);
+
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        return api(originalRequest);
       } catch (refreshError) {
-        // Se o refresh token também expirou, aí sim desloga
-        localStorage.clear();
-        window.location.href = '/login';
+        // Se o refresh falhar (refresh token expirado), LIMPEZA TOTAL
+        handleLogout();
         return Promise.reject(refreshError);
       }
     }
@@ -51,5 +54,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Função auxiliar para garantir que o storage seja limpo e o usuário redirecionado
+const handleLogout = () => {
+  localStorage.removeItem('@App:token');
+  localStorage.removeItem('@App:refreshToken');
+  localStorage.removeItem('@App:user');
+  // Use replace para o usuário não conseguir "voltar" para a página protegida
+  window.location.replace('/login');
+};
 
 export default api;

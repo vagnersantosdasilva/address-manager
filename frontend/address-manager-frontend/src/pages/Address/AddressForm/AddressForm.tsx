@@ -65,6 +65,40 @@ const AddressForm: React.FC = () => {
         }
     };
 
+     useEffect(() => {
+        const userId = getResolvedUserId();
+        const cleanCep = formData.zipCode.replace(/\D/g, '');
+        if (cleanCep.length === 8) {
+            handleZipCodeBlur(cleanCep, userId);
+        }
+    }, [formData.zipCode]);
+
+    const handleZipCodeBlur = async (cep: string, userId:number) => {
+        //setLoadingCep(true);
+        setError(null);
+        try {
+            // Chamada ao seu serviço de zipcode
+            const data = await addressService.zipcode(userId, cep);
+            
+            // Popula os campos com o que retornou do AddressPartial
+            setFormData(prev => ({
+                ...prev,
+                street: data.street || prev.street,
+                neighborhood: data.neighborhood || prev.neighborhood,
+                city: data.city || prev.city,
+                state: data.state || prev.state,
+                complement: data.complement || prev.complement
+            }));
+        } catch (err) {
+            // Não bloqueamos o formulário se o CEP falhar, apenas avisamos
+            console.error("Erro ao buscar CEP:", err);
+        } finally {
+            //setLoadingCep(false);
+        }
+    };
+
+
+
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({

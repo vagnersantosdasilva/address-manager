@@ -33,10 +33,6 @@ const Header: React.FC = () => {
                         <Nav.Link as={Link} to="/myaddresses" active={location.pathname === '/myaddresses'}>
                             Meus endereços
                         </Nav.Link>
-
-                        <Nav.Link as={Link} to="/specification" active={location.pathname === '/specification'}>
-                            Especificações
-                        </Nav.Link>
                     </Nav>
 
                     {/* Lado Direito: Ícone de Usuário */}

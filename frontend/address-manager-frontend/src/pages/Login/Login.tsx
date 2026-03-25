@@ -1,16 +1,14 @@
-//import React, { useState } from 'react';
-import { Alert, Button, Card, Container, Form, Row, Spinner } from 'react-bootstrap';
-import type { login } from '../../models/auth.model';
-import { useState } from 'react';
-import { authService } from '../../services/auth.service';
+import React, { useEffect, useState } from 'react';
+import { Alert, Button, Card, Container, Form, Spinner, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import { authService } from '../../services/auth.service';
+import type { login } from '../../models/auth.model';
+import './Login.css';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
 
-    // Estado inicial seguindo a interface 'login' (cpf e password)
     const [credentials, setCredentials] = useState<login>({
         cpf: '',
         password: ''
@@ -19,7 +17,11 @@ const Login: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Função genérica para atualizar os campos do formulário
+    // Limpeza preventiva ao carregar a tela de login
+    useEffect(() => {
+        localStorage.clear();
+    }, []);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setCredentials(prev => ({ ...prev, [name]: value }));
@@ -33,92 +35,103 @@ const Login: React.FC = () => {
         try {
             const data = await authService.login(credentials);
 
-            // Salva os tokens no localStorage conforme configurado no interceptor
             localStorage.setItem('@App:token', data.accessToken);
             localStorage.setItem('@App:refreshToken', data.refreshToken);
 
-            // Redireciona para a home ou dashboard
             navigate('/');
         } catch (err) {
-            // Verificamos se o erro é de fato um erro do Axios
             if (axios.isAxiosError(err)) {
-                // Agora o TS sabe que err é um AxiosError
-                // O campo 'message' costuma vir na estrutura do seu backend
-                const errorMessage = err.response?.data?.message || 'Erro nas credenciais.';
-                setError(errorMessage);
+                setError(err.response?.data?.message || 'CPF ou senha incorretos.');
             } else {
-                // Erro genérico (ex: erro de rede ou erro de código)
-                setError('Ocorreu um erro inesperado.');
-                console.log(err);
+                setError('Não foi possível conectar ao servidor.');
             }
         } finally {
             setLoading(false);
         }
     };
+
     return (
-        <Container className='pe-5 ps-5'>
-            <h2 className='d-flex justify-content-start m-2'>Login</h2>
+        <Container className="login-wrapper">
+            <Card className="login-card shadow-lg">
+                <Card.Body>
+                    <div className="login-header">
+                        <i className="bi bi-person-lock login-icon"></i>
+                        <h2 className="login-title">Acessar Sistema</h2>
+                        <p className="text-muted">Entre com suas credenciais para gerenciar endereços</p>
+                    </div>
 
-            {error && <Alert variant="danger">{error}</Alert>}
+                    {error && (
+                        <Alert variant="danger" className="py-2 small border-0 shadow-sm">
+                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                            {error}
+                        </Alert>
+                    )}
 
-            <Card className='p-1 m-2'>
-                <Form onSubmit={handleSubmit}>
-                    <Card.Body>
-                        <Container className="mt-1">
-                            <Row className="justify-content-between">
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="d-flex justify-content-start">CPF</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="cpf"
-                                        placeholder="000.000.000-00"
-                                        value={credentials.cpf}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </Form.Group>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="fw-semibold small">CPF</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text className="bg-white border-end-0">
+                                    <i className="bi bi-person text-muted"></i>
+                                </InputGroup.Text>
+                                <Form.Control
+                                    className="border-start-0"
+                                    type="text"
+                                    name="cpf"
+                                    placeholder="Ex :09591525710"
+                                    value={credentials.cpf}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </InputGroup>
+                        </Form.Group>
 
-                                <Form.Group className="mb-3">
-                                    <Form.Label className="d-flex justify-content-start">Senha</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        name="password"
-                                        placeholder="Digite sua senha"
-                                        value={credentials.password}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Row>
-                        </Container>
-                    </Card.Body>
-                    <Card.Footer>
-                        <Row className="d-flex justify-content-end me-1 align-items-center">
-                            <Button
-                                variant="secondary"
-                                onClick={() => navigate(-1)}
-                                className='me-2'
-                                style={{ width: '120px' }}
-                                disabled={loading}
-                            >
-                                Cancelar
-                            </Button>
+                        <Form.Group className="mb-4">
+                            <Form.Label className="fw-semibold small">Senha</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text className="bg-white border-end-0">
+                                    <i className="bi bi-key text-muted"></i>
+                                </InputGroup.Text>
+                                <Form.Control
+                                    className="border-start-0"
+                                    type="password"
+                                    name="password"
+                                    placeholder="Sua senha"
+                                    value={credentials.password}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </InputGroup>
+                        </Form.Group>
 
-                            <Button
-                                variant="primary"
-                                type="submit"
-                                style={{ width: '120px' }}
-                                disabled={loading}
-                            >
-                                {loading ? <Spinner animation="border" size="sm" /> : 'Entrar'}
-                            </Button>
-                        </Row>
-                    </Card.Footer>
-                </Form>
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            className="w-100 btn-login mb-3 shadow-sm"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <Spinner animation="border" size="sm" />
+                            ) : (
+                                <>
+                                    Entrar <i className="bi bi-box-arrow-in-right ms-2"></i>
+                                </>
+                            )}
+                        </Button>
+
+                        <Button
+                            variant="link"
+                            className="w-100 text-decoration-none text-muted small"
+                            onClick={() => navigate('/')}
+                            disabled={loading}
+                        >
+                            Voltar
+                        </Button>
+                    </Form>
+                </Card.Body>
             </Card>
         </Container>
     );
-
 };
 
 export default Login;

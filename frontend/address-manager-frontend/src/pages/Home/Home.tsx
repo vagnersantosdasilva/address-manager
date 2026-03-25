@@ -12,7 +12,7 @@ const Home: React.FC = () => {
             <header className="hero-section">
                 <h1 className="hero-title">Bem-vindo ao Address Manager</h1>
                 <p className="hero-subtitle">
-                    A solução centralizada para organizar, gerenciar e validar endereços de forma inteligente e segura.
+                    Uma solução centralizada para organizar, gerenciar e validar endereços de forma segura.
                 </p>
                 <div className="mt-4">
                     <Button 
@@ -35,7 +35,7 @@ const Home: React.FC = () => {
                             <i className="bi bi-shield-check feature-icon"></i>
                             <h4 className="feature-title">Gestão Segura</h4>
                             <p className="text-muted">
-                                Controle de acesso robusto onde apenas você ou administradores autorizados visualizam seus dados.
+                                Controle de acesso onde apenas você ou administradores autorizados visualizam seus dados.
                             </p>
                         </Card.Body>
                     </Card>

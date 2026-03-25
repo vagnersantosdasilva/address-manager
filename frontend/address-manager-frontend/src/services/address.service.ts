@@ -1,6 +1,6 @@
 // src/services/userService.ts
 
-import type { Address } from "../models/address.model";
+import type { Address, AddressPartial } from "../models/address.model";
 import api from "./api.services";
 
 export const addressService = {
@@ -23,7 +23,10 @@ export const addressService = {
     const response = await api.put<Address>(`api/user/${idUser}/address/${idAddress}`,userData)
     return response.data;
   },
-
   
+  zipcode : async(idUser:number, cep:string): Promise<AddressPartial> => {
+    const response = await api.get<AddressPartial>(`api/user/${idUser}/zipcode/${cep}`)
+    return response.data
+  }
 
 };
