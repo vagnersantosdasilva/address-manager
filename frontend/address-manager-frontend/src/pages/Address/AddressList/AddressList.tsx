@@ -4,6 +4,7 @@ import { Container, Row, Col, Button, Card, Spinner, Alert, Badge } from 'react-
 import './AddressList.css';
 import type { Address } from '../../../models/address.model';
 import { addressService } from '../../../services/address.service';
+import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal';
 
 
 const AddressList: React.FC = () => {
@@ -13,6 +14,11 @@ const AddressList: React.FC = () => {
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Novos estados para o Modal
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [addressToDelete, setAddressToDelete] = useState<number | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
 
     // Identifica o ID do usuário alvo
@@ -53,7 +59,7 @@ const AddressList: React.FC = () => {
     };
 
     const handleNewAddress = () => {
-        console.log('chamando handle',getTargetUserId() )
+        console.log('chamando handle', getTargetUserId())
         if (idUser) {
             // Se existe 'id' na URL, é o Admin agindo sobre um usuário específico
             console.log('chamando new address com 0')
@@ -64,28 +70,42 @@ const AddressList: React.FC = () => {
         }
     }
 
-    const handleEditAddress = async (addressId:number)=>{
+    const handleEditAddress = async (addressId: number) => {
         console.log(user)
-        if (user && user.userType === 'COMMON'){
+        if (user && user.userType === 'COMMON') {
             console.log('para o myaddress', addressId);
             navigate(`/myaddresses/${addressId}`)
         }
         else
 
-        if (userId && addressId){
-            navigate(`/users/${userId}/addresses/${addressId}`)
-        }
+            if (userId && addressId) {
+                navigate(`/users/${userId}/addresses/${addressId}`)
+            }
     };
 
-    const handleDelete = async (addressId: number) => {
-        if (window.confirm("Remover este endereço?")) {
-            try {
-                console.log('userId', userId, 'addresId',addressId)
-                await addressService.delete(userId!, addressId);
-                setAddresses(prev => prev.filter(a => a.id !== addressId));
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Erro ao deletar endereço.');
-            }
+    // 1. Abrir o modal e guardar id de endereco
+    const handleDelete = (addressId: number) => {
+        setAddressToDelete(addressId);
+        setShowDeleteModal(true);
+    };
+
+    // 2. Confirmar exclusao
+    const handleConfirmDelete = async () => {
+        if (!addressToDelete || !userId) return;
+
+        setIsDeleting(true);
+        setError(null);
+        try {
+            await addressService.delete(userId, addressToDelete);
+            setAddresses(prev => prev.filter(a => a.id !== addressToDelete));
+            setShowDeleteModal(false); // Fecha o modal após sucesso
+            fetchAddresses()
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Erro ao deletar endereço.');
+            setShowDeleteModal(false); // Fecha mesmo se der erro para mostrar o Alert de erro da página
+        } finally {
+            setIsDeleting(false);
+            setAddressToDelete(null);
         }
     };
 
@@ -144,7 +164,7 @@ const AddressList: React.FC = () => {
                                             variant="outline-primary"
                                             size="sm"
                                             className="w-100"
-                                            onClick={()=>handleEditAddress(address.id!)}
+                                            onClick={() => handleEditAddress(address.id!)}
                                         >
                                             <i className="bi bi-pencil me-1"></i> Editar
                                         </Button>
@@ -167,6 +187,16 @@ const AddressList: React.FC = () => {
                     </Col>
                 )}
             </Row>
+
+            <ConfirmModal
+                show={showDeleteModal}
+                title="Excluir Endereço"
+                message="Tem certeza que deseja remover este endereço? Esta ação não pode ser desfeita."
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setShowDeleteModal(false)}
+                loading={isDeleting}
+                variant="danger"
+            />
         </Container>
     );
 };

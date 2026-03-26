@@ -1,6 +1,6 @@
 // src/services/userService.ts
 
-import type { User } from "../models/user.model";
+import type { User, UserPartial } from "../models/user.model";
 import api from "./api.services";
 
 export const userService = {
@@ -34,7 +34,7 @@ export const userService = {
     return response.data;
   },
 
-  patch: async(id:number,userData:User): Promise<User> =>{
+  patch: async(id:number,userData:UserPartial): Promise<User> =>{
     const response = await api.patch<User>(`api/user/${id}`,userData)
     return response.data;
   }
