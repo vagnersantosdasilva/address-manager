@@ -1,73 +1,55 @@
-# React + TypeScript + Vite
+# 🌍 Address Manager - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Esta é a interface web do sistema de gerenciamento de endereços, construída com **React 19**, **TypeScript** e **Vite**. A aplicação oferece uma experiência de usuário fluida para gestão de perfis e localizações, com suporte a múltiplos níveis de acesso (Admin e Comum).
 
-Currently, two official plugins are available:
+## 🚀 Tecnologias Principais
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* **React + TypeScript**: Desenvolvimento robusto e tipado.
+* **React Router Dom**: Gerenciamento de rotas complexas (Admin vs. User).
+* **React Bootstrap**: Componentização e layout responsivo.
+* **Axios**: Integração com API REST.
+* **Bootstrap Icons**: Identidade visual consistente.
 
-## React Compiler
+## ✨ Funcionalidades Implementadas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Autenticação JWT**: Fluxo de login com persistência segura.
+* **Gestão de Endereços**: 
+    * Listagem, criação, edição e exclusão.
+    * Definição de endereço principal (`isMain`).
+    * Busca automática de logradouro via CEP (Integração ViaCEP no Backend).
+* **Perfil de Usuário**: 
+    * Edição *inline* (PATCH) campo a campo.
+    * Formatação dinâmica de datas.
+* **Painel Administrativo**: Visualização e gerenciamento de endereços de terceiros.
+* **UX**: Modais de confirmação customizados e feedbacks de carregamento.
 
-## Expanding the ESLint configuration
+## 🛠️ Instalação e Execução Local
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Pré-requisitos
+* Node.js (v19 ou superior)
+* Gerenciador de pacotes (NPM ou Yarn)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Passos
+1. Entre na pasta do frontend:
+   ```bash
+   cd frontend/address-manager-frontend 
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. Instale as dependências:
+  ```bash
+   npm install
+  ```
+3. Configure as variáveis de ambiente (crie um arquivo .env na raiz do projeto frontend):
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+   VITE_API_URL=http://localhost:8080
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+4. Inicie o servidor de desenvolvimento:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+   npm run dev
 ```
+
+5. Acesse: http://localhost:5173
+
