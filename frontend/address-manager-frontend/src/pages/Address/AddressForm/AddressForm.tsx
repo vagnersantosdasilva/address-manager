@@ -14,7 +14,7 @@ const AddressForm: React.FC = () => {
     const { resolvedUserId, addressId, isEditMode } = useMemo(() => {
         const urlUserId = idUser && idUser !== 'undefined' ? Number(idUser) : null;
         const storedUser = JSON.parse(localStorage.getItem('@App:user') || '{}');
-        
+
         return {
             resolvedUserId: urlUserId || Number(storedUser.id) || 0,
             addressId: id && id !== 'new' ? Number(id) : null,
@@ -89,13 +89,24 @@ const AddressForm: React.FC = () => {
     };
 
     // 5. Handlers de Eventos
-    const handleChange = (e: React.ChangeEvent<any>) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
+    // const handleChange = (e: React.ChangeEvent<any>) => {
+    //     const { name, value, type, checked } = e.target;
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         [name]: type === 'checkbox' ? checked : value
+    //     }));
+    // };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+
+        // Verifica se o alvo é especificamente um Input para acessar o 'checked'
+        const isCheckbox = e.target instanceof HTMLInputElement && e.target.type === 'checkbox';
+        const finalValue = isCheckbox ? (e.target as HTMLInputElement).checked : value;
+
+        setFormData(prev => ({ ...prev, [name]: finalValue }));
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -110,7 +121,7 @@ const AddressForm: React.FC = () => {
             } else {
                 await addressService.create(resolvedUserId, formData);
             }
-            navigate(-1); 
+            navigate(-1);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erro ao salvar endereço.');
         } finally {
@@ -234,7 +245,7 @@ const AddressForm: React.FC = () => {
                     <hr />
 
                     <div className="is-main-check mb-4">
-                        <Form.Check 
+                        <Form.Check
                             type="checkbox"
                             label="Definir como endereço principal"
                             name="isMain"
