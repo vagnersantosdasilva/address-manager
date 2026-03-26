@@ -20,10 +20,8 @@ const AddressList: React.FC = () => {
     const [addressToDelete, setAddressToDelete] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-
-    // Identifica o ID do usuário alvo
     const getTargetUserId = (): number | null => {
-        if (idUser) return Number(idUser); // Se tem ID na URL, é o Admin visualizando alguém
+        if (idUser) return Number(idUser); 
 
         const storedUser = localStorage.getItem('@App:user');
         if (storedUser) {
@@ -61,11 +59,8 @@ const AddressList: React.FC = () => {
     const handleNewAddress = () => {
         console.log('chamando handle', getTargetUserId())
         if (idUser) {
-            // Se existe 'id' na URL, é o Admin agindo sobre um usuário específico
-            console.log('chamando new address com 0')
             navigate(`/users/${idUser}/addresses/new`);
         } else {
-            // Rota protegida e sem ID exposto para o usuário comum
             navigate('/myaddresses/news');
         }
     }
@@ -83,13 +78,11 @@ const AddressList: React.FC = () => {
             }
     };
 
-    // 1. Abrir o modal e guardar id de endereco
     const handleDelete = (addressId: number) => {
         setAddressToDelete(addressId);
         setShowDeleteModal(true);
     };
 
-    // 2. Confirmar exclusao
     const handleConfirmDelete = async () => {
         if (!addressToDelete || !userId) return;
 
@@ -98,11 +91,11 @@ const AddressList: React.FC = () => {
         try {
             await addressService.delete(userId, addressToDelete);
             setAddresses(prev => prev.filter(a => a.id !== addressToDelete));
-            setShowDeleteModal(false); // Fecha o modal após sucesso
+            setShowDeleteModal(false);
             fetchAddresses()
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erro ao deletar endereço.');
-            setShowDeleteModal(false); // Fecha mesmo se der erro para mostrar o Alert de erro da página
+            setShowDeleteModal(false);
         } finally {
             setIsDeleting(false);
             setAddressToDelete(null);

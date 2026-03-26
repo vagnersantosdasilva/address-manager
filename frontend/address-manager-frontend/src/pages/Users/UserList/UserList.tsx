@@ -4,12 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { Alert, Badge, Button, Card, Col, Container, Row, Spinner, Table } from "react-bootstrap";
 import { userService } from "../../../services/user.service";
 import './UserList.css';
+import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
 
 const UserList: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<number | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -22,20 +27,33 @@ const UserList: React.FC = () => {
             setUsers(data);
             setError(null);
         } catch (err) {
-            setError(err instanceof Error ? err.message :  'Erro ao carregar usuários. Verifique sua conexão.');
+            setError(err instanceof Error ? err.message : 'Erro ao carregar usuários. Verifique sua conexão.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (window.confirm('Deseja realmente excluir este usuário?')) {
-            try {
-                await userService.delete(id); 
-                setUsers(prev => prev.filter(user => user.id !== id));
-            } catch (err) {
-                setError(err instanceof Error ? err.message :'Não foi possível excluir o usuário.');
-            }
+
+    const handleDelete = (addressId: number) => {
+        setUserToDelete(addressId);
+        setShowDeleteModal(true);
+    };
+    
+    const handleConfirmDelete = async () => {
+        if (!userToDelete) return;
+
+        setIsDeleting(true);
+        setError(null);
+        try {
+            await userService.delete(userToDelete);
+            setUsers(prev => prev.filter(a => a.id !== userToDelete));
+            setShowDeleteModal(false); // Fecha o modal após sucesso
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Erro ao deletar usuário.');
+            setShowDeleteModal(false); // Fecha mesmo se der erro para mostrar o Alert de erro da página
+        } finally {
+            setIsDeleting(false);
+            setUserToDelete(null);
         }
     };
 
@@ -47,7 +65,7 @@ const UserList: React.FC = () => {
         );
     }
 
-   return (
+    return (
         <Container className="user-list-container">
             {/* Cabeçalho */}
             <Row className="mb-4 align-items-center">
@@ -58,7 +76,7 @@ const UserList: React.FC = () => {
                     <p className="text-muted">Gerencie os acessos e informações dos usuários.</p>
                 </Col>
                 <Col className="text-end">
-                    <Button 
+                    <Button
                         onClick={() => navigate('/users/new')}
                         className="btn-new-user shadow-sm"
                     >
@@ -124,7 +142,7 @@ const UserList: React.FC = () => {
                         ))}
                     </tbody>
                 </Table>
-                
+
                 {users.length === 0 && !error && (
                     <div className="empty-state-container">
                         <i className="bi bi-inbox empty-state-icon"></i>
@@ -132,6 +150,16 @@ const UserList: React.FC = () => {
                     </div>
                 )}
             </Card>
+
+            <ConfirmModal
+                show={showDeleteModal}
+                title="Excluir Usuário"
+                message="Tem certeza que deseja remover este usuário? Esta ação não pode ser desfeita."
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setShowDeleteModal(false)}
+                loading={isDeleting}
+                variant="danger"
+            />
         </Container>
     );
 };
