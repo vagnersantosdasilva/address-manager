@@ -45,47 +45,40 @@ public class TokenService {
         return new TokenDto(accessToken,refreshToken);
     }
 
-    private String generateToken(User user){
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(algorithmHMAC);
-            return JWT.create()
-                    .withIssuer("Manager Address")
-                    .withSubject(user.getUsername())
-                    .withExpiresAt(expiration(5))
-                    .sign(algorithm);
-        } catch (JWTCreationException exception){
-            throw new BusinessException("Erro ao gerar token JWT de acesso!");
-        }
+    private String generateToken(User user) {
+        return JWT.create()
+                .withIssuer("Manager Address")
+                .withSubject(user.getId().toString()) // Identidade única
+                .withClaim("role", user.getAuthorities().toString()) // Opcional: para o front ler
+                .withExpiresAt(expiration(60))
+                .sign(Algorithm.HMAC256(algorithmHMAC));
     }
 
     private String generateRefreshToken(User user) {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(algorithmHMAC);
-            return JWT.create()
-                    .withIssuer("Manager Address")
-                    .withSubject(user.getId().toString())
-                    .withExpiresAt(expiration(120))
-                    .sign(algorithm);
-        } catch (JWTCreationException exception){
-            throw new BusinessException("Erro ao gerar refresh token JWT de acesso!");
-        }
+        return JWT.create()
+                .withIssuer("Manager Address")
+                .withSubject(user.getId().toString()) // Mesma identidade
+                .withClaim("purpose", "refresh") // Diferenciação de uso
+                .withExpiresAt(expiration(120))
+                .sign(Algorithm.HMAC256(algorithmHMAC));
     }
 
     private Instant expiration(Integer minutes) {
         return LocalDateTime.now().plusMinutes(minutes).toInstant(ZoneOffset.of("-03:00"));
     }
 
-    public String verifyToken(String token){
-        DecodedJWT decodedJWT;
+    public String verifyToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(algorithmHMAC);
-            JWTVerifier verifier = JWT.require(algorithm)
+            return JWT.require(algorithm)
                     .withIssuer("Manager Address")
-                    .build();
-            decodedJWT = verifier.verify(token);
-            return decodedJWT.getSubject();
-        } catch (JWTVerificationException exception){
-            throw new BusinessException("Erro ao verificar token JWT de acesso!");
+                    .build()
+                    .verify(token)
+                    .getSubject();
+        } catch (JWTVerificationException exception) {
+            // IMPORTANTE: Logar o erro real ajuda a saber se expirou ou se a assinatura é inválida
+            System.out.println("Erro na verificação do JWT: " + exception.getMessage());
+            throw new BusinessException("Token inválido ou expirado");
         }
     }
 }

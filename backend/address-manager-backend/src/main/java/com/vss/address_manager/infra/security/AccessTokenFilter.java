@@ -3,6 +3,7 @@ package com.vss.address_manager.infra.security;
 import com.vss.address_manager.domain.atutentication.TokenService;
 import com.vss.address_manager.domain.user.User;
 import com.vss.address_manager.domain.user.UserRepository;
+import com.vss.address_manager.infra.exceptions.BusinessException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,11 +32,30 @@ public class AccessTokenFilter extends OncePerRequestFilter {
         String token = recoverRequestToken(request);
 
         if(token != null){
+
+            String idUsuarioStr = tokenService.verifyToken(token);
+            Long idUsuario = Long.parseLong(idUsuarioStr);
+
+            // IMPORTANTE: Buscar por ID no repositório
+            var usuario = userRepository.findById(idUsuario)
+                    .orElseThrow(() -> new BusinessException("Usuário não encontrado com o ID do Token"));
+
+            // Coloca o usuário no contexto do Spring
+            var authentication = new UsernamePasswordAuthenticationToken(
+                    usuario,
+                    null,
+                    usuario.getAuthorities()
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            /*
+
             String cpf = tokenService.verifyToken(token);
             User user = userRepository.findByCpf(cpf).orElseThrow();
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);*/
         }
 
         filterChain.doFilter(request, response);

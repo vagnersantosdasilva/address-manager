@@ -59,14 +59,13 @@ public class UserController {
     }
 
     @GetMapping("user/cpf/{cpf}")
-
     @PreAuthorize("hasAnyRole('ADMIN', 'COMMON')")
     public ResponseEntity<UserResponseDto> getUserByCpf(@PathVariable String cpf) {
         return ResponseEntity.ok().body(userService.getUserByCPF(cpf));
     }
 
     @PatchMapping("user/{id}")
-    @PreAuthorize("#id.equals(principal.id)")
+    @PreAuthorize("#id == authentication.principal.id")
     public ResponseEntity<UserResponseDto> selfUpdate(
             @PathVariable Long id,
             @RequestBody @Valid UserSelfUpdateDto dto) {
