@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Card, Spinner, Alert } from 'react-bootstrap';
 import './AddressForm.css';
@@ -6,12 +6,23 @@ import type { Address } from '../../../models/address.model';
 import { addressService } from '../../../services/address.service';
 
 const AddressForm: React.FC = () => {
-    // userId vem da URL em rotas de admin (/admin/users/:userId/addresses/new)
-    // id vem da URL em rotas de edição (/addresses/:id ou /admin/users/:userId/addresses/:id)
+    // 1. Definições de Rota e Identificação
     const { idUser, id } = useParams<{ idUser?: string, id?: string }>();
     const navigate = useNavigate();
-    const isEditMode = Boolean(id);
 
+    // UseMemo para evitar recálculos desnecessários e garantir consistência
+    const { resolvedUserId, addressId, isEditMode } = useMemo(() => {
+        const urlUserId = idUser && idUser !== 'undefined' ? Number(idUser) : null;
+        const storedUser = JSON.parse(localStorage.getItem('@App:user') || '{}');
+        
+        return {
+            resolvedUserId: urlUserId || Number(storedUser.id) || 0,
+            addressId: id && id !== 'new' ? Number(id) : null,
+            isEditMode: Boolean(id && id !== 'new' && !isNaN(Number(id)))
+        };
+    }, [idUser, id]);
+
+    // 2. Estados do Formulário
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(isEditMode);
     const [error, setError] = useState<string | null>(null);
@@ -25,37 +36,28 @@ const AddressForm: React.FC = () => {
         city: '',
         state: '',
         isMain: false,
-        userId: 0
+        userId: resolvedUserId // Inicializa com o dono correto
     });
 
-    // Lógica para determinar qual ID de usuário usar (URL ou LocalStorage)
-    const getResolvedUserId = (): number => {
-        if (idUser) return Number(idUser);
-        console.log('pelo idUser da url:',idUser)
-        
-        const stored = localStorage.getItem('@App:user');
-        if (stored) {
-            console.log('retornando do storage', JSON.parse(stored).id)
-            return JSON.parse(stored).id;
-        }
-        return 0;
-    };
-
+    // 3. Efeito de Carregamento Inicial (Apenas Edição)
     useEffect(() => {
-        const targetUserId = getResolvedUserId();
-        if (isEditMode && id) {
-            loadAddress(targetUserId, Number(id));
+        if (isEditMode && addressId) {
+            loadAddress(resolvedUserId, addressId);
         } else {
-            setFormData(prev => ({ ...prev, userId: targetUserId }));
+            // Se for novo endereço, garante que o userId está no formData
+            setFormData(prev => ({ ...prev, userId: resolvedUserId }));
         }
-    }, [id, idUser]);
+    }, [isEditMode, addressId, resolvedUserId]);
 
     const loadAddress = async (uId: number, addrId: number) => {
         try {
             const all = await addressService.getAll(uId);
-            
             const addr = all.find(a => a.id === addrId);
-            if (addr) setFormData(addr);
+            if (addr) {
+                setFormData(addr);
+            } else {
+                setError("Endereço não encontrado.");
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erro ao carregar endereço.');
         } finally {
@@ -63,40 +65,30 @@ const AddressForm: React.FC = () => {
         }
     };
 
-     useEffect(() => {
-        const userId = getResolvedUserId();
+    // 4. Busca Automática de CEP
+    useEffect(() => {
         const cleanCep = formData.zipCode.replace(/\D/g, '');
         if (cleanCep.length === 8) {
-            handleZipCodeBlur(cleanCep, userId);
+            handleZipCodeBlur(cleanCep, resolvedUserId);
         }
-    }, [formData.zipCode]);
+    }, [formData.zipCode, resolvedUserId]);
 
-    const handleZipCodeBlur = async (cep: string, userId:number) => {
-        //setLoadingCep(true);
-        setError(null);
+    const handleZipCodeBlur = async (cep: string, userId: number) => {
         try {
-            
             const data = await addressService.zipcode(userId, cep);
-            
-            // Popula os campos com o que retornou do AddressPartial
             setFormData(prev => ({
                 ...prev,
                 street: data.street || prev.street,
                 neighborhood: data.neighborhood || prev.neighborhood,
                 city: data.city || prev.city,
-                state: data.state || prev.state,
-                complement: data.complement || prev.complement
+                state: data.state || prev.state
             }));
         } catch (err) {
-            // Não bloqueamos o formulário se o CEP falhar, apenas avisamos
             console.error("Erro ao buscar CEP:", err);
-        } finally {
-            //setLoadingCep(false);
         }
     };
 
-
-
+    // 5. Handlers de Eventos
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -111,12 +103,13 @@ const AddressForm: React.FC = () => {
         setError(null);
 
         try {
-            if (isEditMode && id) {
-                await addressService.update(formData.userId, Number(id), formData);
+            if (resolvedUserId === 0) throw new Error("Usuário não identificado.");
+
+            if (isEditMode && addressId) {
+                await addressService.update(resolvedUserId, addressId, formData);
             } else {
-                await addressService.create(formData.userId, formData);
+                await addressService.create(resolvedUserId, formData);
             }
-            // Volta para a listagem (seja admin ou pessoal)
             navigate(-1); 
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erro ao salvar endereço.');
@@ -125,20 +118,30 @@ const AddressForm: React.FC = () => {
         }
     };
 
-    if (initialLoading) return <Container className="text-center py-5"><Spinner animation="border" /></Container>;
+    if (initialLoading) {
+        return (
+            <Container className="text-center py-5">
+                <Spinner animation="border" variant="primary" />
+                <p className="mt-2">Carregando dados...</p>
+            </Container>
+        );
+    }
 
     return (
         <Container className="address-form-container">
-            <h2 className="fw-bold mb-4" style={{ color: 'var(--primary-color)' }}>
-                <i className="bi bi-geo-alt me-2"></i>
-                {isEditMode ? 'Editar Endereço' : 'Novo Endereço'}
-            </h2>
+            <header className="mb-4">
+                <h2 className="fw-bold" style={{ color: 'var(--primary-color)' }}>
+                    <i className="bi bi-geo-alt me-2"></i>
+                    {isEditMode ? 'Editar Endereço' : 'Novo Endereço'}
+                </h2>
+                {idUser && <Alert variant="info" className="py-2">Modo Administrador: Gerenciando endereço do usuário ID {idUser}</Alert>}
+            </header>
 
-            {error && <Alert variant="danger">{error}</Alert>}
+            {error && <Alert variant="danger" dismissible onClose={() => setError(null)}>{error}</Alert>}
 
             <Card className="address-form-card shadow-sm">
                 <Form onSubmit={handleSubmit}>
-                    <h5 className="form-section-title">Localização</h5>
+                    <h5 className="form-section-title mb-3">Localização</h5>
                     <Row>
                         <Col md={4} className="mb-3">
                             <Form.Group>
@@ -228,7 +231,9 @@ const AddressForm: React.FC = () => {
                         </Col>
                     </Row>
 
-                    <div className="is-main-check mt-3 mb-4">
+                    <hr />
+
+                    <div className="is-main-check mb-4">
                         <Form.Check 
                             type="checkbox"
                             label="Definir como endereço principal"
@@ -236,6 +241,7 @@ const AddressForm: React.FC = () => {
                             checked={formData.isMain}
                             onChange={handleChange}
                             id="check-main"
+                            className="fw-bold"
                         />
                     </div>
 
@@ -244,7 +250,8 @@ const AddressForm: React.FC = () => {
                             Cancelar
                         </Button>
                         <Button type="submit" className="btn-save-address shadow-sm" disabled={loading}>
-                            {loading ? <Spinner size="sm" /> : 'Salvar Endereço'}
+                            {loading ? <Spinner size="sm" className="me-2" /> : null}
+                            {isEditMode ? 'Salvar Alterações' : 'Cadastrar Endereço'}
                         </Button>
                     </div>
                 </Form>

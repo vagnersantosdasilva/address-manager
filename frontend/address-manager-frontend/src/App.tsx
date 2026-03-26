@@ -56,10 +56,29 @@ function App() {
           />
 
           <Route
-            path="/users/:id/addresses" 
+            path="/users/:idUser/addresses" 
             element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <AddressList />
+              </ProtectedRoute>
+            }
+          />
+
+
+           <Route
+            path="users/:idUser/addresses/new" 
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <AddressForm />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="users/:idUser/addresses/:id" 
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <AddressForm />
               </ProtectedRoute>
             }
           />
@@ -100,15 +119,8 @@ function App() {
             }
           />
 
+          
 
-          <Route
-            path="users/:idUser/addresses/:id" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <AddressForm />
-              </ProtectedRoute>
-            }
-          />
 
         </Routes>
       </Container>

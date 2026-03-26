@@ -7,7 +7,7 @@ import { addressService } from '../../../services/address.service';
 
 
 const AddressList: React.FC = () => {
-    const { id } = useParams<{ id: string }>(); // ID do usuário vindo da URL (para Admin)
+    const { idUser } = useParams<{ idUser: string }>(); // ID do usuário vindo da URL (para Admin)
     const navigate = useNavigate();
 
     const [addresses, setAddresses] = useState<Address[]>([]);
@@ -17,7 +17,7 @@ const AddressList: React.FC = () => {
 
     // Identifica o ID do usuário alvo
     const getTargetUserId = (): number | null => {
-        if (id) return Number(id); // Se tem ID na URL, é o Admin visualizando alguém
+        if (idUser) return Number(idUser); // Se tem ID na URL, é o Admin visualizando alguém
 
         const storedUser = localStorage.getItem('@App:user');
         if (storedUser) {
@@ -38,7 +38,7 @@ const AddressList: React.FC = () => {
             setError("Usuário não identificado.");
             setLoading(false);
         }
-    }, [id]);
+    }, [idUser]);
 
     const fetchAddresses = async () => {
         setLoading(true);
@@ -53,12 +53,14 @@ const AddressList: React.FC = () => {
     };
 
     const handleNewAddress = () => {
-        if (id) {
+        console.log('chamando handle',getTargetUserId() )
+        if (idUser) {
             // Se existe 'id' na URL, é o Admin agindo sobre um usuário específico
-            navigate(`/users/${id}/addresses/new`);
+            console.log('chamando new address com 0')
+            navigate(`/users/${idUser}/addresses/new`);
         } else {
             // Rota protegida e sem ID exposto para o usuário comum
-            navigate('/myaddresses/new');
+            navigate('/myaddresses/news');
         }
     }
 
@@ -78,8 +80,9 @@ const AddressList: React.FC = () => {
     const handleDelete = async (addressId: number) => {
         if (window.confirm("Remover este endereço?")) {
             try {
-                await addressService.delete(userId!, addressId);
-                setAddresses(prev => prev.filter(a => a.id !== addressId));
+                console.log('userId', userId, 'addresId',addressId)
+                //await addressService.delete(userId!, addressId);
+                //setAddresses(prev => prev.filter(a => a.id !== addressId));
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Erro ao deletar endereço.');
             }
@@ -96,7 +99,7 @@ const AddressList: React.FC = () => {
                 <Col>
                     <h2 className="fw-bold" style={{ color: 'var(--primary-color)' }}>
                         <i className="bi bi-geo-alt-fill me-2"></i>
-                        {id ? `Endereços do Usuário #${id}` : 'Meus Endereços'}
+                        {idUser ? `Endereços do Usuário #${idUser}` : 'Meus Endereços'}
                     </h2>
                 </Col>
                 <Col className="text-end">

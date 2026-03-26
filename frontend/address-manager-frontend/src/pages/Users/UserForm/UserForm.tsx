@@ -51,10 +51,8 @@ const UserForm: React.FC = () => {
         setError(null);
 
         try {
-            // 1. Criamos uma cópia do formData para manipular
             const payload = { ...formData };
 
-            // 2. Lógica para a senha: se estiver vazia e for edição, removemos do objeto
             if (isEditMode && !payload.password?.trim()) {
                 delete payload.password;
             }
