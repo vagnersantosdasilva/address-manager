@@ -28,6 +28,8 @@ const AddressList: React.FC = () => {
     };
 
     const userId = getTargetUserId();
+    const userJson = localStorage.getItem('@App:user');
+    const user = userJson ? JSON.parse(userJson) : null;
 
     useEffect(() => {
         if (userId) {
@@ -59,6 +61,19 @@ const AddressList: React.FC = () => {
             navigate('/myaddresses/new');
         }
     }
+
+    const handleEditAddress = async (addressId:number)=>{
+        console.log(user)
+        if (user && user.userType === 'COMMON'){
+            console.log('para o myaddress', addressId);
+            navigate(`/myaddresses/${addressId}`)
+        }
+        else
+
+        if (userId && addressId){
+            navigate(`/users/${userId}/addresses/${addressId}`)
+        }
+    };
 
     const handleDelete = async (addressId: number) => {
         if (window.confirm("Remover este endereço?")) {
@@ -126,7 +141,7 @@ const AddressList: React.FC = () => {
                                             variant="outline-primary"
                                             size="sm"
                                             className="w-100"
-                                            onClick={() => navigate(`/users/${userId}/addresses/${address.id}`)}
+                                            onClick={()=>handleEditAddress(address.id!)}
                                         >
                                             <i className="bi bi-pencil me-1"></i> Editar
                                         </Button>
