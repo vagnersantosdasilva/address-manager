@@ -67,3 +67,4 @@ frontend/address-manager-frontend/pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+.env

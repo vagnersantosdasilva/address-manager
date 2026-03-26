@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mysql:8
+    container_name: address_manager_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: address_manager
+      MYSQL_ROOT_PASSWORD: ${BD_SECRET:-root}
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend/address-manager-backend
+    container_name: address_manager_api
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/address_manager?createDatabaseIfNotExist=true
+      BD_USER: root
+      BD_SECRET: ${BD_SECRET:-root}
+      ALG_SECRET: ${ALG_SECRET:-mysecret}
+      ADM_CPF_DEFAULT: ${ADM_CPF_DEFAULT:-00000000000}
+      ADM_PASSWORD_DEFAULT: ${ADM_PASSWORD_DEFAULT:-admin123}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: 
+      context: ./frontend/address-manager-frontend
+      args:
+        - VITE_API_URL=http://localhost:8080
+    container_name: address_manager_web
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
