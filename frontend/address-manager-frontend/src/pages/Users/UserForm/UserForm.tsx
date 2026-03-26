@@ -33,7 +33,7 @@ const UserForm: React.FC = () => {
             const user = await userService.getById(userId);
             setFormData({ ...user, password: '' }); // Não carregar a senha 
         } catch (err) {
-            setError(err instanceof Error ? err.message :  'Erro ao carregar dados do usuário.');
+            setError(err instanceof Error ? err.message : 'Erro ao carregar dados do usuário.');
         } finally {
             setInitialLoading(false);
         }
@@ -44,21 +44,29 @@ const UserForm: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            if (isEditMode) {
-                await userService.update(Number(id), formData);
-            } else {
-                await userService.create(formData);
+            // 1. Criamos uma cópia do formData para manipular
+            const payload = { ...formData };
+
+            // 2. Lógica para a senha: se estiver vazia e for edição, removemos do objeto
+            if (isEditMode && !payload.password?.trim()) {
+                delete payload.password;
             }
-            navigate('/users'); // Volta para a lista após sucesso
+
+            if (isEditMode) {
+                await userService.update(Number(id), payload);
+            } else {
+                await userService.create(payload);
+            }
+            navigate('/users');
         } catch (err) {
-            setError(err instanceof Error ? err.message :  'Erro ao tentar salvar usuário');
+            setError(err instanceof Error ? err.message : 'Erro ao tentar salvar usuário');
         } finally {
             setLoading(false);
         }
@@ -131,9 +139,9 @@ const UserForm: React.FC = () => {
                         <Col md={6} className="mb-3">
                             <Form.Group>
                                 <Form.Label>Tipo de Usuário</Form.Label>
-                                <Form.Select 
-                                    name="userType" 
-                                    value={formData.userType} 
+                                <Form.Select
+                                    name="userType"
+                                    value={formData.userType}
                                     onChange={handleChange}
                                 >
                                     <option value="COMMON">Comum (COMMON)</option>
@@ -159,15 +167,15 @@ const UserForm: React.FC = () => {
                     </Row>
 
                     <div className="form-actions">
-                        <Button 
-                            variant="outline-secondary" 
-                            className="btn-cancel" 
+                        <Button
+                            variant="outline-secondary"
+                            className="btn-cancel"
                             onClick={() => navigate('/users')}
                         >
                             Cancelar
                         </Button>
-                        <Button 
-                            type="submit" 
+                        <Button
+                            type="submit"
                             className="btn-save shadow-sm"
                             disabled={loading}
                         >
