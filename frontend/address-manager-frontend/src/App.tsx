@@ -11,6 +11,7 @@ import UserForm from './pages/Users/UserForm/UserForm';
 import AddressList from './pages/Address/AddressList/AddressList';
 import AddressForm from './pages/Address/AddressForm/AddressForm';
 import Home from './pages/Home/Home';
+import Profile from './pages/Profile/Profile';
 
 function App() {
 
@@ -89,6 +90,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="profile" 
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'COMMON']}>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
 
           <Route
             path="users/:idUser/addresses/:id" 

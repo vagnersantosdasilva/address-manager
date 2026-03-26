@@ -71,7 +71,7 @@ const Header: React.FC = () => {
                                 </NavDropdown.Item>
                             ) : (
                                 <>
-                                    <NavDropdown.Item as={Link} to="/perfil">
+                                    <NavDropdown.Item as={Link} to="/profile">
                                         <i className="bi bi-person me-2"></i> Meu Perfil
                                     </NavDropdown.Item>
 

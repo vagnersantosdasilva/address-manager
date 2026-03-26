@@ -34,6 +34,8 @@ export const userService = {
     return response.data;
   },
 
-  
-
+  patch: async(id:number,userData:User): Promise<User> =>{
+    const response = await api.patch<User>(`api/user/${id}`,userData)
+    return response.data;
+  }
 };
