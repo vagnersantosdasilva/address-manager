@@ -9,15 +9,10 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public record UserSelfUpdateDto (
-        @NotBlank(message="Name não pode ser vazio")
         String name,
-        @NotBlank(message = "cpf não pode ser vazio")
-        @CpfValid(message="Formato de cpf inválido")
+        @CpfValid
         String cpf,
-        @NotNull(message = "Data de nascimento não pode ser vazio")
         LocalDate birthDate,
-        @NotBlank
-        @Size(min = 6, message="Password deve ter mínio de 6 caracteres")
+        @Size(min = 6)
         String password
-){
-}
+){}

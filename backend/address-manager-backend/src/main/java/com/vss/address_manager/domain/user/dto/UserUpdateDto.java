@@ -5,6 +5,7 @@ import com.vss.address_manager.domain.user.UserType;
 import com.vss.address_manager.domain.user.valid.CpfValid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
@@ -19,6 +20,8 @@ public record UserUpdateDto(
         @NotNull(message="Campo Birth Date não pode ser vazio")
         LocalDate birthDate,
         @NotNull(message="Campo User Type não pode ser vazio")
-        UserType userType // Use o Enum diretamente aqui!
+        UserType userType,
+        @Size(min=6, message="Senha deve ter mínimo de 6 caracteres")
+        String password
 ) {
 }

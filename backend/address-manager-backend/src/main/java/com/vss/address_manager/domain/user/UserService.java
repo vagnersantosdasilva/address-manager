@@ -47,7 +47,11 @@ public class UserService {
             user.setUserType(userDto.userType());
             user.setCpf(userDto.cpf());
             user.setBirthDate(userDto.birthDate());
+            if (userDto.password() !=null && !userDto.password().isBlank()) {
+                user.setPassword(passwordEncoder.encode(userDto.password()));
+            }
             User userSaved =  this.userRepository.save(user);
+
             return new UserResponseDto(userSaved);
         }
         throw new ResourceNotFoundException("Usuário não encontrado!");
@@ -92,16 +96,12 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         // Atualiza apenas o que é permitido
-        user.setName(dto.name());
-        user.setCpf(dto.cpf());
-        user.setBirthDate(dto.birthDate());
-        user.setPassword(passwordEncoder.encode(dto.password()));
+        if (dto.name()!=null) user.setName(dto.name());
+        if (dto.cpf()!=null && !dto.cpf().isBlank()) user.setCpf(dto.cpf());
+        if (dto.birthDate()!=null)  user.setBirthDate(dto.birthDate());
+        if (dto.password()!=null)  user.setPassword(passwordEncoder.encode(dto.password()));
         // O campo user.setUserType() não pode ser chamado aqui.
         return new UserResponseDto(userRepository.save(user));
     }
 
-    //TODO: metodo para atualizar senha
-    public void updatePassword(String cpf, String password){
-
-    }
 }
