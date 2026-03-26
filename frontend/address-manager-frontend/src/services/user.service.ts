@@ -26,7 +26,7 @@ export const userService = {
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/users/${id}`);
+    await api.delete(`api/user/${id}`);
   },
 
   update: async(id:number, userData:User): Promise<User> => {

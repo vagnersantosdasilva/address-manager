@@ -81,8 +81,8 @@ const AddressList: React.FC = () => {
         if (window.confirm("Remover este endereço?")) {
             try {
                 console.log('userId', userId, 'addresId',addressId)
-                //await addressService.delete(userId!, addressId);
-                //setAddresses(prev => prev.filter(a => a.id !== addressId));
+                await addressService.delete(userId!, addressId);
+                setAddresses(prev => prev.filter(a => a.id !== addressId));
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Erro ao deletar endereço.');
             }

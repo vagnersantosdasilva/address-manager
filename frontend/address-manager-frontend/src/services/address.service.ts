@@ -16,7 +16,7 @@ export const addressService = {
   },
 
   delete: async (idUser: number, idAddress: number): Promise<void> => {
-    await api.delete(`/users/${idUser}/address/${idAddress}`);
+    await api.delete(`api/user/${idUser}/address/${idAddress}`);
   },
 
   update: async(idUser:number , idAddress:number, userData:Address): Promise<Address> => {
