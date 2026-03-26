@@ -1,5 +1,5 @@
 # Estágio 1: Build
-FROM node:19-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
